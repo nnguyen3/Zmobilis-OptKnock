@@ -527,3 +527,274 @@ fprintf('Manual GTHS KO max ethanol flux = %.6f\n', sol_GTHS_etoh.f);
 % LDH_D KO max ethanol = 20.102276
 % LDH_D knockout was feasible and maintained biomass growth.
 % The maximum ethanol flux was 20.102276, which was similar to the WT
+
+
+%% Force ethanol secretion before OptKnock
+
+model_force = model;
+
+% Force small ethanol export
+model_force = changeRxnBounds(model_force, 'EX_etoh_e', 1, 'l');
+
+% Check growth with forced ethanol
+model_force = changeObjective(model_force, biomassRxn);
+sol_force_growth = optimizeCbModel(model_force);
+
+% Check ethanol flux during growth
+etohFlux_force = sol_force_growth.x(strcmp(model_force.rxns, targetRxn));
+
+fprintf('Forced ethanol growth = %.6f\n', sol_force_growth.f);
+fprintf('Forced ethanol flux during growth = %.6f\n', etohFlux_force);
+
+% max ethanol under forced condition
+model_force = changeObjective(model_force, targetRxn);
+sol_force_etoh = optimizeCbModel(model_force, 'max');
+
+fprintf('Forced condition max ethanol = %.6f\n', sol_force_etoh.f);
+
+% Forced ethanol growth = 0.057545
+% Forced ethanol flux during growth = 1.000000
+% Forced condition max ethanol = 20.102276
+
+for etohLB = [5 10 15 18 19 20]
+    model_test = model;
+    model_test = changeRxnBounds(model_test, 'EX_etoh_e', etohLB, 'l');
+
+    model_test = changeObjective(model_test, biomassRxn);
+    sol = optimizeCbModel(model_test);
+
+    fprintf('Forced ethanol LB = %.1f | growth = %.6f\n', etohLB, sol.f);
+end
+
+% Forced ethanol LB = 5.0 | growth = 0.057545
+% Forced ethanol LB = 10.0 | growth = 0.057545
+% Forced ethanol LB = 15.0 | growth = 0.057545
+% Forced ethanol LB = 18.0 | growth = 0.057545
+% Forced ethanol LB = 19.0 | growth = 0.057545
+% Ethanol LB = 19 was selected because it was the highest feasible value
+% that maintained normal biomass growth.
+% Forced ethanol LB = 20.0 | growth = 0.005866, decline
+
+model_force = model;
+model_force = changeRxnBounds(model_force, 'EX_etoh_e', 19, 'l');
+
+model_force = changeObjective(model_force, biomassRxn);
+sol_force_growth = optimizeCbModel(model_force);
+
+constrOpt_force = struct();
+constrOpt_force.rxnList = {biomassRxn};
+constrOpt_force.values = 0.5 * sol_force_growth.f;
+constrOpt_force.sense = 'G';
+
+options.numDel = 1;
+options.numDelSense = 'L';
+options.targetRxn = 'EX_etoh_e';
+
+[optKnockSol_1KO_force19, bilevelMILPproblem_1KO_force19] = OptKnock( ...
+    model_force, selectedRxnList_filtered, options, constrOpt_force);
+
+disp(optKnockSol_1KO_force19.rxnList); %{'GLUCYS'}
+
+% Manual validation: GLUCYS KO under forced ethanol condition
+
+model_GLUCYS = model_force;
+model_GLUCYS = changeRxnBounds(model_GLUCYS, 'GLUCYS', 0, 'b');
+
+model_GLUCYS = changeObjective(model_GLUCYS, biomassRxn);
+sol_GLUCYS_growth = optimizeCbModel(model_GLUCYS);
+
+etohFlux_GLUCYS_growth = sol_GLUCYS_growth.x(strcmp(model_GLUCYS.rxns, targetRxn));
+
+model_GLUCYS = changeObjective(model_GLUCYS, targetRxn);
+sol_GLUCYS_etoh = optimizeCbModel(model_GLUCYS, 'max');
+
+fprintf('GLUCYS KO growth = %.6f\n', sol_GLUCYS_growth.f);
+fprintf('GLUCYS KO ethanol flux during growth = %.6f\n', etohFlux_GLUCYS_growth);
+fprintf('GLUCYS KO max ethanol flux = %.6f\n', sol_GLUCYS_etoh.f);
+
+% GLUCYS KO growth = 0.000000
+% GLUCYS KO ethanol flux during growth = 19.000000
+% GLUCYS KO max ethanol flux = 20.102276
+% GLUCYS was rejected because manual validation showed zero biomass growth,
+% even though ethanol export was still feasible.
+
+
+% Remove GLUCYS from the candidate list and re run 1 OK again
+selectedRxnList_force_noGLUCYS = setdiff(selectedRxnList_filtered, {'GLUCYS'});
+
+[optKnockSol_1KO_force19_noGLUCYS, bilevelMILPproblem_1KO_force19_noGLUCYS] = OptKnock( ...
+    model_force, selectedRxnList_force_noGLUCYS, options, constrOpt_force);
+
+disp(optKnockSol_1KO_force19_noGLUCYS.rxnList); % {'GTHS'}
+
+% Manual validation: GTHS KO under forced ethanol condition
+
+model_GTHS_force = model_force;
+model_GTHS_force = changeRxnBounds(model_GTHS_force, 'GTHS', 0, 'b');
+
+model_GTHS_force = changeObjective(model_GTHS_force, biomassRxn);
+sol_GTHS_force_growth = optimizeCbModel(model_GTHS_force);
+
+etohFlux_GTHS_force = sol_GTHS_force_growth.x(strcmp(model_GTHS_force.rxns, targetRxn));
+
+fprintf('GTHS KO forced growth = %.6f\n', sol_GTHS_force_growth.f);
+fprintf('GTHS KO forced ethanol flux = %.6f\n', etohFlux_GTHS_force);
+% GTHS KO forced growth = 0.000000
+% GTHS KO forced ethanol flux = 19.000000
+% GTHS was rejected because manual validation showed zero biomass growth
+% under the forced ethanol condition.
+
+% Rerun OptKnock after removing  {'GLUCYS','GTHS'});candidates
+
+selectedRxnList_force_noBad = setdiff( ...
+    selectedRxnList_filtered, ...
+    {'GLUCYS','GTHS'});
+
+options.numDel = 1;
+options.numDelSense = 'L';
+options.targetRxn = 'EX_etoh_e';
+
+[optKnockSol_1KO_force19_noBad, bilevelMILPproblem_1KO_force19_noBad] = OptKnock( ...
+    model_force, selectedRxnList_force_noBad, options, constrOpt_force);
+
+disp('Forced ethanol condition without GLUCYS and GTHS:');
+disp(optKnockSol_1KO_force19_noBad.rxnList);
+
+growthFlux = optKnockSol_1KO_force19_noBad.fluxes(strcmp(model_force.rxns, biomassRxn));
+etohFlux = optKnockSol_1KO_force19_noBad.fluxes(strcmp(model_force.rxns, targetRxn));
+
+fprintf('Predicted 1-KO growth = %.6f\n', growthFlux);
+fprintf('Predicted 1-KO ethanol flux = %.6f\n', etohFlux);
+
+% Forced ethanol condition without GLUCYS and GTHS:{'GLUDy'}
+% Predicted 1-KO growth = 0.085104
+% Predicted 1-KO ethanol flux = 18.591738
+
+% Manual validation: GLUDy KO under forced ethanol condition
+
+model_GLUDy_force = model_force;
+model_GLUDy_force = changeRxnBounds(model_GLUDy_force, 'GLUDy', 0, 'b');
+
+model_GLUDy_force = changeObjective(model_GLUDy_force, biomassRxn);
+sol_GLUDy_force_growth = optimizeCbModel(model_GLUDy_force);
+
+etohFlux_GLUDy_force = sol_GLUDy_force_growth.x(strcmp(model_GLUDy_force.rxns, targetRxn));
+
+model_GLUDy_force = changeObjective(model_GLUDy_force, targetRxn);
+sol_GLUDy_force_etoh = optimizeCbModel(model_GLUDy_force, 'max');
+
+fprintf('GLUDy KO forced growth = %.6f\n', sol_GLUDy_force_growth.f);
+fprintf('GLUDy KO forced ethanol flux during growth = %.6f\n', etohFlux_GLUDy_force);
+fprintf('GLUDy KO max ethanol flux = %.6f\n', sol_GLUDy_force_etoh.f);
+
+% GLUDy was kept because manual validation showed positive biomass growth
+% while maintaining the forced ethanol flux of 19.
+
+%% Run 2-KO OptKnock under forced ethanol condition
+
+options.numDel = 2;
+options.numDelSense = 'L';
+options.targetRxn = 'EX_etoh_e';
+
+[optKnockSol_2KO_force19, bilevelMILPproblem_2KO_force19] = OptKnock( ...
+    model_force, selectedRxnList_force_noBad, options, constrOpt_force);
+
+disp('Forced ethanol condition - recommended 2 knockouts:');
+disp(optKnockSol_2KO_force19.rxnList);
+
+growthFlux = optKnockSol_2KO_force19.fluxes(strcmp(model_force.rxns, biomassRxn));
+etohFlux = optKnockSol_2KO_force19.fluxes(strcmp(model_force.rxns, targetRxn));
+
+fprintf('Predicted 2-KO growth = %.6f\n', growthFlux);
+fprintf('Predicted 2-KO ethanol flux = %.6f\n', etohFlux);
+
+% OptKnock returned only one knockout candidate (NDPK4) options.numDelSense = 'L';
+% even though up to 2 knockouts were allowed.
+% Manual validation: NDPK4 KO under forced ethanol condition
+
+model_NDPK4_force = model_force;
+model_NDPK4_force = changeRxnBounds(model_NDPK4_force, 'NDPK4', 0, 'b');
+
+model_NDPK4_force = changeObjective(model_NDPK4_force, biomassRxn);
+sol_NDPK4_force_growth = optimizeCbModel(model_NDPK4_force);
+
+etohFlux_NDPK4_force = sol_NDPK4_force_growth.x(strcmp(model_NDPK4_force.rxns, targetRxn));
+
+model_NDPK4_force = changeObjective(model_NDPK4_force, targetRxn);
+sol_NDPK4_force_etoh = optimizeCbModel(model_NDPK4_force, 'max');
+
+fprintf('NDPK4 KO forced growth = %.6f\n', sol_NDPK4_force_growth.f);
+fprintf('NDPK4 KO forced ethanol flux during growth = %.6f\n', etohFlux_NDPK4_force);
+fprintf('NDPK4 KO max ethanol flux = %.6f\n', sol_NDPK4_force_etoh.f);
+
+% NDPK4 KO forced growth = 0.057545
+% NDPK4 KO forced ethanol flux during growth = 19.000000
+% NDPK4 KO max ethanol flux = 20.102276
+
+% With numDelSense = 'L', OptKnock returned only NDPK4 because it allowed
+% less than or equal to 2 knockouts.
+% NDPK4 was feasible, but it did not improve maximum ethanol production.
+
+% With numDelSense = 'E', OptKnock was forced to return exactly 2 knockouts.
+% OptKnock options.numDelSense = 'E'; to see what happen
+options.numDel = 2;
+options.numDelSense = 'E';
+options.targetRxn = 'EX_etoh_e';
+
+[optKnockSol_2KO_force19, bilevelMILPproblem_2KO_force19] = OptKnock( ...
+    model_force, selectedRxnList_force_noBad, options, constrOpt_force);
+
+disp('Forced ethanol condition - recommended 2 knockouts:');
+disp(optKnockSol_2KO_force19.rxnList);
+
+growthFlux = optKnockSol_2KO_force19.fluxes(strcmp(model_force.rxns, biomassRxn));
+etohFlux = optKnockSol_2KO_force19.fluxes(strcmp(model_force.rxns, targetRxn));
+
+fprintf('Predicted 2-KO growth = %.6f\n', growthFlux);
+fprintf('Predicted 2-KO ethanol flux = %.6f\n', etohFlux);
+
+% % The recommended 2-KO was GLUDy + GLUSy.
+
+% Predicted 2-KO growth = 0.046769
+% Predicted 2-KO ethanol flux = 18.843082
+
+% Manual validation: GLUDy + GLUSy KO under forced ethanol condition
+
+model_GLUDy_GLUSy_force = model_force;
+model_GLUDy_GLUSy_force = changeRxnBounds(model_GLUDy_GLUSy_force, 'GLUDy', 0, 'b');
+model_GLUDy_GLUSy_force = changeRxnBounds(model_GLUDy_GLUSy_force, 'GLUSy', 0, 'b');
+
+model_GLUDy_GLUSy_force = changeObjective(model_GLUDy_GLUSy_force, biomassRxn);
+sol_GLUDy_GLUSy_force_growth = optimizeCbModel(model_GLUDy_GLUSy_force);
+
+etohFlux_GLUDy_GLUSy_force = sol_GLUDy_GLUSy_force_growth.x(strcmp(model_GLUDy_GLUSy_force.rxns, targetRxn));
+
+model_GLUDy_GLUSy_force = changeObjective(model_GLUDy_GLUSy_force, targetRxn);
+sol_GLUDy_GLUSy_force_etoh = optimizeCbModel(model_GLUDy_GLUSy_force, 'max');
+
+fprintf('GLUDy + GLUSy KO forced growth = %.6f\n', sol_GLUDy_GLUSy_force_growth.f);
+fprintf('GLUDy + GLUSy KO forced ethanol flux during growth = %.6f\n', etohFlux_GLUDy_GLUSy_force);
+fprintf('GLUDy + GLUSy KO max ethanol flux = %.6f\n', sol_GLUDy_GLUSy_force_etoh.f);
+% GLUDy + GLUSy was feasible under forced ethanol production.
+% The mutant maintained ethanol flux = 19, but growth decreased to 0.029418.
+% Maximum ethanol flux was unchanged compared to WT, so this KO did not improve ethanol production.
+
+% Ethanol production in the WT model was already near the theoretical maximum.
+% Several feasible knockout candidates were identified (GLUDy, NDPK4),
+% but none increased the maximum ethanol flux beyond the WT value.
+
+% WT:
+% growth = 0.057545
+% max ethanol flux = 20.102276
+
+% GLUDy KO:
+% growth = 0.053530
+% max ethanol flux = 20.102276
+
+% NDPK4 KO:
+% growth = 0.057545
+% max ethanol flux = 20.102276
+
+% Although LDH_D KO was feasible and had similar maximum ethanol flux,
+% OptKnock preferred other knockout solutions under the current optimization constraints.
+
