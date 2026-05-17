@@ -395,10 +395,15 @@ end
 % EX_ibtol_e LB = 0.10 | growth = 0.059439 | iso flux = 0.100000 | stat = 1
 % EX_ibtol_e LB = 0.50 | growth = 0.058491 | iso flux = 0.500000 | stat = 1
 % EX_ibtol_e LB = 1.00 | growth = 0.057305 | iso flux = 1.000000 | stat = 1
+% Isobutanol LB = 1 was selected to force isobutanol flux during growth. 
+% because it enforced isobutanol production
+% while maintaining growth close to the wild-type condition.
+
 % EX_ibtol_e LB = 2.00 | growth = 0.054933 | iso flux = 2.000000 | stat = 1
 % EX_ibtol_e LB = 5.00 | growth = 0.047817 | iso flux = 5.000000 | stat = 1
 % EX_ibtol_e LB = 8.00 | growth = 0.040702 | iso flux = 8.000000 | stat = 1
 % EX_ibtol_e LB = 9.00 | growth = 0.038330 | iso flux = 9.000000 | stat = 1
+
 
 % Isobutanol production is feasible during growth,
 % but it is not naturally growth-coupled.
@@ -614,3 +619,6 @@ fprintf('PGCD KO iso flux during growth = %.6f\n', sol_PGCD.v(id_iso));
 
 % Therefore, ALCD2x is the strongest knockout candidate found for
 % growth-associated isobutanol production.
+
+save('/Users/nhinguyen/Desktop/Z.mobilis/Models/Zm_model_may16_2026_ALCD2x_OptKnock.mat', ...
+    'model_OK');
