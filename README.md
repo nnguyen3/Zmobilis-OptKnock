@@ -39,18 +39,46 @@ Workflow summary:
 * Tests whether isobutanol production is growth-coupled
 * Identifies `ALCD2x` as the strongest knockout candidate under the forced-isobutanol condition
 
-Key Isobutanol Result
+## Key Isobutanol Results
+
 Wild-type growth:
+
+```text
 WT growth = 0.059677
+```
+
 Wild-type maximum isobutanol production:
+
+```text
 WT max isobutanol flux = 10.030751
+```
+
 During normal growth, the WT model produced zero isobutanol:
+
+```text
 WT isobutanol flux during growth = 0.000000
-After forcing minimum isobutanol production, OptKnock identified ALCD2x as the strongest knockout candidate.
+```
+
+This showed that isobutanol production was feasible, but not naturally growth-coupled.
+
+After forcing minimum isobutanol production, OptKnock identified `ALCD2x` as the strongest knockout candidate.
+
 Manual validation showed:
+
+```text
 ALCD2x KO growth = 0.036737
 ALCD2x KO isobutanol flux during growth = 9.671502
-This result suggests that ALCD2x may improve growth-associated isobutanol production in the anaerobic Z. mobilis model.
+```
+
+Compared to the forced WT condition:
+
+```text
+Forced WT isobutanol flux during growth = 1.000000
+ALCD2x KO isobutanol flux during growth = 9.671502
+Increase = 8.671502
+```
+
+These results suggest that `ALCD2x` may improve growth-associated isobutanol production in the anaerobic *Z. mobilis* model.
 
 ## Requirements
 
