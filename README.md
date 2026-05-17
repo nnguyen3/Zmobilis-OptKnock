@@ -39,7 +39,7 @@ Workflow summary:
 * Tests whether isobutanol production is growth-coupled
 * Identifies `ALCD2x` as the strongest knockout candidate under the forced-isobutanol condition
 
-*Key Isobutanol Result
+Key Isobutanol Result
 Wild-type growth:
 WT growth = 0.059677
 Wild-type maximum isobutanol production:
