@@ -622,3 +622,54 @@ fprintf('PGCD KO iso flux during growth = %.6f\n', sol_PGCD.v(id_iso));
 
 save('/Users/nhinguyen/Desktop/Z.mobilis/Models/Zm_model_may16_2026_ALCD2x_OptKnock.mat', ...
     'model_OK');
+
+
+
+%% Final summary for isobutanol OptKnock result
+
+% Reaction: ALCD2x
+% nad_c + etoh_c <=> h_c + nadh_c + acald_c
+% Ethanol alcohol dehydrogenase reaction.
+
+% GPR rule:
+% ZMO1596 OR ZMO1722 OR ZMO1236 OR ZMO1771 OR ZMOp33x021
+
+% Because the relationship is OR, knocking out a single gene alone
+% may not completely remove the reaction activity.
+
+% In the OptKnock result, deleting ALCD2x at the reaction level
+% likely redirected carbon and redox flux away from ethanol metabolism
+% and toward isobutanol production.
+
+% ALCD2x KO growth = 0.036737
+% ALCD2x KO isobutanol flux during growth = 9.671502
+
+% WT max theoretical isobutanol capacity
+% WT growth = 0.059677
+% WT max isobutanol flux = 10.030751
+
+% I first checked that the WT model can grow and theoretically produce isobutanol. 
+% WT growth was 0.059677, and WT max isobutanol was 10.030751.
+
+% Initial OptKnock suggested HPN6 and G6PDA + MDH3, 
+% with predicted isobutanol around 9.45 under the maximum isobutanol optimization condition. 
+% => This means the model was being optimized to produce the maximum possible isobutanol, 
+% rather than being optimized for normal growth.
+
+% But after manual validation, they did not produce isobutanol during normal growth,
+% so they were not good growth-coupled candidates.
+
+% Then I forced the model to produce at least 1 isobutanol while growing. 
+% Under this condition, OptKnock recommended ALCD2x. 
+
+% Manual validation showed ALCD2x KO still allowed growth (0.036737) and 
+% increased isobutanol during growth to 9.671502, close to the WT max 
+% theoretical isobutanol capacity (10.030751).
+
+% When I removed ALCD2x from the candidate list, OptKnock suggested PGCD, 
+% but PGCD only produced 1.000000, so it was not a strong improvement.
+
+% So FINAL CONCLUSION: ALCD2x is the best and strongest feasible knockout 
+% candidate for growth-associated isobutanol production.
+
+
