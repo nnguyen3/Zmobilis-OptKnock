@@ -80,6 +80,26 @@ Increase = 8.671502
 
 These results suggest that `ALCD2x` may improve growth-associated isobutanol production in the anaerobic *Z. mobilis* model.
 
+### FluxRETAP-inspired Analysis
+
+A FluxRETAP-inspired flux variability analysis (FVA) workflow
+was performed to compare low- and high-isobutanol production states.
+
+Workflow:
+- Gradually forced increasing isobutanol production
+- Ran Flux Variability Analysis (FVA) at each production level
+- Compared reaction flux distributions between conditions
+- Ranked reactions based on flux changes
+
+Key finding:
+`ALCD2x` showed one of the largest flux changes between
+low- and high-isobutanol conditions. As isobutanol production
+increased, flux through the ethanol synthesis pathway decreased,
+suggesting competition between ethanol and isobutanol production pathways.
+
+This result reinforced the previous OptKnock and manual validation results,
+supporting `ALCD2x` as the strongest engineering target identified in this study.
+
 ## Requirements
 
 * MATLAB
