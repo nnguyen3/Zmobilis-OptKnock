@@ -1,111 +1,203 @@
-# Zmobilis-OptKnock
+# iZM_SDSU: Genome-Scale Metabolic Modeling of Zymomonas mobilis
 
-This repository contains OptKnock workflows for ethanol and isobutanol production using anaerobic Zymomonas mobilis genome-scale metabolic models (GEMs).
+This repository contains the final **iZM_SDSU genome-scale metabolic model (GEM)** of *Zymomonas mobilis* and computational workflows used to investigate ethanol and isobutanol production.
+
+The repository includes the final curated metabolic model, OptKnock analyses, computational validation of predicted knockout strategies, and a FluxRETAP-inspired analysis of metabolic flux changes associated with isobutanol production.
+
 ## Repository Structure
 
-### ethanol/
-
-Contains the ethanol OptKnock benchmark workflow.
-
-Main script:
-
 ```text
-optknock_ethanol_nhi_may_16.m
+Zmobilis-OptKnock/
+│
+├── models/
+│   ├── iZM_SDSU.xml
+│   └── iZM_SDSU.mat
+│
+├── ethanol/
+│   └── OK_etoh_0714.mlx
+│
+├── isobutanol/
+│   ├── OK_iso_0714.mlx
+│   └── OK_iso_double_validate_0714.mlx
+│
+├── FluxRETAP_Isobutanol_Zmobilis/
+│
+└── README.md
 ```
 
-Workflow summary:
+## Final iZM_SDSU Model
 
-* Runs OptKnock using `EX_etoh_e` as the target reaction
-* Tests broad and filtered knockout candidate lists
-* Checks whether `LDH_D` exists in the model and candidate list
-* Performs manual `LDH_D` knockout analysis
+The `models/` directory contains the final curated **iZM_SDSU** genome-scale metabolic model.
 
-### isobutanol/
+Two formats are provided:
 
-Contains the isobutanol OptKnock workflow.
+- `iZM_SDSU.xml` — SBML version for model sharing and interoperability
+- `iZM_SDSU.mat` — MATLAB version for use with the COBRA Toolbox
 
-Main script:
+The final model contains:
 
 ```text
-optknock_isobutanol_nhi_0516.m
+Reactions:   2,286
+Metabolites: 1,880
+Genes:       718
 ```
 
-Workflow summary:
-
-* Runs OptKnock using `EX_ibtol_e` as the target reaction
-* Tests broad and filtered knockout candidate lists
-* Removes exchange, sink, transport, and other non-ideal reactions
-* Manually validates knockout candidates
-* Tests whether isobutanol production is growth-coupled
-* Identifies `ALCD2x` as the strongest knockout candidate under the forced-isobutanol condition
-
-## Key Isobutanol Results
-
-Wild-type growth:
+The biomass objective reaction is:
 
 ```text
-WT growth = 0.059677
+BIOMASS_core
 ```
 
-Wild-type maximum isobutanol production:
+The SBML model was validated by re-importing the exported model and performing flux balance analysis (FBA).
+
+The re-imported model retained:
 
 ```text
-WT max isobutanol flux = 10.030751
+Reactions:   2,286
+Metabolites: 1,880
+Genes:       718
+FBA status:  optimal
+Growth:      0.059677 h^-1
 ```
 
-During normal growth, the WT model produced zero isobutanol:
+## Anaerobic Simulation Conditions
+
+Biofuel production analyses were performed under anaerobic conditions.
+
+Key simulation constraints included:
 
 ```text
-WT isobutanol flux during growth = 0.000000
+Glucose uptake (EX_glc__D_e) = -10 mmol gDW^-1 h^-1
+Oxygen uptake  (EX_o2_e)     = 0 mmol gDW^-1 h^-1
 ```
 
-This showed that isobutanol production was feasible, but not naturally growth-coupled.
+The biomass reaction was used as the growth objective during computational validation.
 
-After forcing minimum isobutanol production, OptKnock identified `ALCD2x` as the strongest knockout candidate.
+For the isobutanol OptKnock analysis, a minimum biomass requirement of **50% of the wild-type growth rate** was used to maintain viable growth while searching for production-associated knockout strategies.
 
-Manual validation showed:
+## Ethanol OptKnock Analysis
+
+The `ethanol/` directory contains the final OptKnock workflow used to investigate knockout strategies for ethanol production under anaerobic conditions.
+
+Main analysis:
 
 ```text
-ALCD2x KO growth = 0.036737
-ALCD2x KO isobutanol flux during growth = 9.671502
+OK_etoh_0714.mlx
 ```
 
-Compared to the forced WT condition:
+The workflow includes:
+
+- Applying anaerobic simulation constraints
+- Using ethanol exchange (`EX_etoh_e`) as the target reaction
+- Running OptKnock to identify knockout candidates
+- Computationally validating predicted knockout strategies using FBA
+- Evaluating whether ethanol production is growth-coupled
+
+Multiple knockout strategies were predicted during the OptKnock analyses.
+
+However, subsequent computational validation showed that **none of the tested knockout strategies achieved validated growth-coupled ethanol production under the examined anaerobic conditions**.
+
+Therefore, no final knockout strategy was selected for ethanol production.
+
+## Isobutanol OptKnock Analysis
+
+The `isobutanol/` directory contains the final OptKnock and computational validation workflows for isobutanol production.
+
+Main analyses:
 
 ```text
-Forced WT isobutanol flux during growth = 1.000000
-ALCD2x KO isobutanol flux during growth = 9.671502
-Increase = 8.671502
+OK_iso_0714.mlx
+OK_iso_double_validate_0714.mlx
 ```
 
-These results suggest that `ALCD2x` may improve growth-associated isobutanol production in the anaerobic *Z. mobilis* model.
+`OK_iso_0714.mlx` contains the final OptKnock analysis.
 
-### FluxRETAP-inspired Analysis
+`OK_iso_double_validate_0714.mlx` contains the computational validation of the selected double-knockout strategy.
 
-A FluxRETAP-inspired flux variability analysis (FVA) workflow
-was performed to compare low- and high-isobutanol production states.
+### Wild-Type Model
 
-Workflow:
-- Gradually forced increasing isobutanol production
-- Ran Flux Variability Analysis (FVA) at each production level
-- Compared reaction flux distributions between conditions
-- Ranked reactions based on flux changes
+Under the simulated anaerobic condition, wild-type growth was:
 
-Key finding:
-`ALCD2x` showed one of the largest flux changes between
-low- and high-isobutanol conditions. As isobutanol production
-increased, flux through the ethanol synthesis pathway decreased,
-suggesting competition between ethanol and isobutanol production pathways.
+```text
+WT growth = 0.059677 h^-1
+```
 
-This result reinforced the previous OptKnock and manual validation results,
-supporting `ALCD2x` as the strongest engineering target identified in this study.
+The maximum theoretical isobutanol production was:
 
-## Requirements
+```text
+WT maximum isobutanol flux = 10.030751 mmol gDW^-1 h^-1
+```
 
-* MATLAB
-* COBRA Toolbox
-* Gurobi solver
+During biomass maximization, the wild-type model produced no isobutanol:
 
-## Notes
+```text
+WT isobutanol flux during growth = 0 mmol gDW^-1 h^-1
+```
 
-Large `.mat` model files are included for reproducibility.
+This indicates that isobutanol production is feasible in the expanded model but is not naturally coupled to biomass production.
+
+### Final Validated Knockout Strategy
+
+Following exclusion of `ALCD2x` from the OptKnock search space, an additional OptKnock analysis was performed to identify alternative knockout candidates.
+
+The **PDH–PYRDC double knockout** was the most promising computationally validated strategy.
+
+Computational validation showed:
+
+```text
+Growth = 0.036720 h^-1
+Growth relative to WT = 61.53%
+Isobutanol production = 9.669147 mmol gDW^-1 h^-1
+```
+
+The mutant therefore maintained approximately **61.5% of wild-type growth** while supporting substantial isobutanol production.
+
+These results identify the **PDH–PYRDC double knockout** as the most promising validated isobutanol strategy under the simulated anaerobic conditions.
+
+## FluxRETAP-Inspired Analysis
+
+The `FluxRETAP_Isobutanol_Zmobilis/` directory contains a FluxRETAP-inspired analysis used to investigate metabolic flux changes associated with increasing isobutanol production.
+
+The workflow compares low- and high-isobutanol production states using flux variability analysis (FVA).
+
+The analysis includes:
+
+- Increasing the required isobutanol production level
+- Performing FVA at different production states
+- Comparing reaction flux ranges between low- and high-isobutanol conditions
+- Identifying reactions associated with changes in isobutanol production
+
+The analysis showed decreased flux through ethanol-associated reactions as isobutanol production increased, including decreased flux associated with `ALCD2x`.
+
+These results suggest competition between native ethanol production and the engineered isobutanol pathway and provide complementary information to the OptKnock analysis.
+
+## Software Requirements
+
+The computational analyses were performed using:
+
+- MATLAB
+- COBRA Toolbox
+- Gurobi Optimizer
+
+The SBML version of iZM_SDSU can also be imported into software that supports SBML-compatible constraint-based metabolic models.
+
+## Model Formats
+
+| File | Description |
+|---|---|
+| `iZM_SDSU.xml` | Final model in SBML format |
+| `iZM_SDSU.mat` | Final model in MATLAB/COBRA Toolbox format |
+
+The SBML version was checked by re-importing the exported model and confirming that the reaction, metabolite, and gene counts were preserved and that the model retained a feasible optimal FBA solution.
+
+## Citation
+
+If you use the iZM_SDSU model or computational workflows from this repository, please cite the associated master's thesis.
+
+A permanent archived version and citation information will be added with the final repository release.
+
+## Author
+
+**Nhi Nguyen**  
+M.S. Bioinformatics and Medical Informatics  
+San Diego State University
