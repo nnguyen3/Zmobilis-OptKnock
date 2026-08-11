@@ -8,7 +8,7 @@ The repository includes the final curated metabolic model, OptKnock analyses, co
 
 ## Citation
 
-Nguyen, N. (2026). *nnguyen3/Zmobilis-OptKnock: iZM_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21881065
+Nguyen, N., & Canto-Encalada, G. (2026). *nnguyen3/Zmobilis-OptKnock: iZM\_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.21881065](https://doi.org/10.5281/zenodo.21881065)
 
 ## Repository Structure
 
