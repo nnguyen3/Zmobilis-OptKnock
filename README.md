@@ -1,11 +1,14 @@
 # iZM_SDSU: Genome-Scale Metabolic Modeling of Zymomonas mobilis
+
+This repository contains the iZM_SDSU genome-scale metabolic model (GEM) of *Zymomonas mobilis* and the computational workflows used in this thesis to investigate ethanol and isobutanol production.
+
+The iZM_SDSU model was developed with contributions from **Nhi Nguyen and Gabriela Canto** in the Zúñiga Lab,SDSU. The OptKnock analyses, computational validation, FluxRETAP-inspired analysis, and associated computational workflows in this repository were developed by **Nhi Nguyen**.
+
+The repository includes the final curated metabolic model, OptKnock analyses, computational validation of predicted knockout strategies, and a FluxRETAP-inspired analysis of metabolic flux changes associated with isobutanol production.
+
 ## Citation
 
 Nguyen, N. (2026). *nnguyen3/Zmobilis-OptKnock: iZM_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21881065
-
-This repository contains the final **iZM_SDSU genome-scale metabolic model (GEM)** of *Zymomonas mobilis* and computational workflows used to investigate ethanol and isobutanol production.
-
-The repository includes the final curated metabolic model, OptKnock analyses, computational validation of predicted knockout strategies, and a FluxRETAP-inspired analysis of metabolic flux changes associated with isobutanol production.
 
 ## Repository Structure
 
