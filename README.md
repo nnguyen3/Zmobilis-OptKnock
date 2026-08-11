@@ -8,10 +8,11 @@ The repository includes the final curated metabolic model, OptKnock analyses, co
 
 ```text
 Zmobilis-OptKnock/
-│
-├── models/
-│   ├── iZM_SDSU.xml
-│   └── iZM_SDSU.mat
+├── Models/
+│   ├── Zm_model_april_27_anaerobic_GF_2026.mat
+│   ├── Zm_model_may_06_anaerobic_GF_2026_isobutanol.mat
+│   ├── iZM_SDSU.mat
+│   └── iZM_SDSU.xml
 │
 ├── ethanol/
 │   └── OK_etoh_0714.mlx
@@ -21,7 +22,6 @@ Zmobilis-OptKnock/
 │   └── OK_iso_double_validate_0714.mlx
 │
 ├── FluxRETAP_Isobutanol_Zmobilis/
-│
 └── README.md
 ```
 
