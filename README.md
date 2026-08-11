@@ -1,24 +1,24 @@
-# iZM_SDSU: Genome-Scale Metabolic Modeling of Zymomonas mobilis
+# iZM_SDSU: Genome-Scale Metabolic Modeling of *Zymomonas mobilis*
 
-This repository contains the iZM_SDSU genome-scale metabolic model (GEM) of *Zymomonas mobilis* and the computational workflows used in this thesis to investigate ethanol and isobutanol production.
+This repository contains the **iZM_SDSU genome-scale metabolic model (GEM)** of *Zymomonas mobilis* and the computational workflows used in this thesis to investigate ethanol and isobutanol production.
 
-The iZM_SDSU model was developed with contributions from **Nhi Nguyen and Gabriela Canto** in the Zúñiga Lab,SDSU. The OptKnock analyses, computational validation, FluxRETAP-inspired analysis, and associated computational workflows in this repository were developed by **Nhi Nguyen**.
+The iZM_SDSU model was developed with contributions from **Nhi Nguyen and Gabriela Canto** in the Zúñiga Lab at San Diego State University (SDSU). The OptKnock analyses, computational validation, FluxRETAP-inspired analysis, and associated computational workflows in this repository were developed by **Nhi Nguyen**.
 
-The repository includes the final curated metabolic model, OptKnock analyses, computational validation of predicted knockout strategies, and a FluxRETAP-inspired analysis of metabolic flux changes associated with isobutanol production.
+The repository includes the final curated metabolic model, analysis-specific model variants, OptKnock analyses, computational validation of predicted knockout strategies, and a FluxRETAP-inspired analysis of metabolic flux changes associated with isobutanol production.
 
 ## Citation
 
-Nguyen, N., & Canto-Encalada, G. (2026). *nnguyen3/Zmobilis-OptKnock: iZM\_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. [https://doi.org/10.5281/zenodo.21881065](https://doi.org/10.5281/zenodo.21881065)
+Nguyen, N., & Canto-Encalada, G. (2026). *nnguyen3/Zmobilis-OptKnock: iZM_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21881065
 
 ## Repository Structure
 
 ```text
 Zmobilis-OptKnock/
 ├── Models/
-│   ├── Zm_model_april_27_anaerobic_GF_2026.mat
-│   ├── Zm_model_may_06_anaerobic_GF_2026_isobutanol.mat
 │   ├── iZM_SDSU.mat
-│   └── iZM_SDSU.xml
+│   ├── iZM_SDSU.xml
+│   ├── Zm_model_april_27_anaerobic_GF_2026.mat
+│   └── Zm_model_may_06_anaerobic_GF_2026_isobutanol.mat
 │
 ├── ethanol/
 │   └── OK_etoh_0714.mlx
@@ -31,9 +31,16 @@ Zmobilis-OptKnock/
 └── README.md
 ```
 
+The `iZM_SDSU.mat` and `iZM_SDSU.xml` files represent the **final curated genome-scale metabolic model**.
+
+The additional `.mat` files are analysis-specific model variants used for the anaerobic ethanol and isobutanol simulations reported in this thesis:
+
+- `Zm_model_april_27_anaerobic_GF_2026.mat` — model used for the anaerobic ethanol analysis.
+- `Zm_model_may_06_anaerobic_GF_2026_isobutanol.mat` — isobutanol-expanded model used for the anaerobic isobutanol analysis.
+
 ## Final iZM_SDSU Model
 
-The `models/` directory contains the final curated **iZM_SDSU** genome-scale metabolic model.
+The `Models/` directory contains the final curated **iZM_SDSU** genome-scale metabolic model.
 
 Two formats are provided:
 
@@ -43,9 +50,9 @@ Two formats are provided:
 The final model contains:
 
 ```text
-Reactions:   2,286
-Metabolites: 1,880
-Genes:       718
+Reactions:   2,866
+Metabolites: 2,029
+Genes:       709
 ```
 
 The biomass objective reaction is:
@@ -54,21 +61,17 @@ The biomass objective reaction is:
 BIOMASS_core
 ```
 
-The SBML model was validated by re-importing the exported model and performing flux balance analysis (FBA).
-
-The re-imported model retained:
+The SBML model was validated by re-importing the exported model using COBRApy. The re-imported SBML model retained the same model dimensions:
 
 ```text
-Reactions:   2,286
-Metabolites: 1,880
-Genes:       718
-FBA status:  optimal
-Growth:      0.059677 h^-1
+Reactions:   2,866
+Metabolites: 2,029
+Genes:       709
 ```
 
 ## Anaerobic Simulation Conditions
 
-Biofuel production analyses were performed under anaerobic conditions.
+Biofuel production analyses were performed under anaerobic conditions using analysis-specific model variants derived for the ethanol and isobutanol workflows.
 
 Key simulation constraints included:
 
@@ -190,17 +193,11 @@ The SBML version of iZM_SDSU can also be imported into software that supports SB
 ## Model Formats
 
 | File | Description |
-|---|---|
-| `iZM_SDSU.xml` | Final model in SBML format |
-| `iZM_SDSU.mat` | Final model in MATLAB/COBRA Toolbox format |
+| --- | --- |
+| `iZM_SDSU.xml` | Final model in SBML format for model sharing and interoperability |
+| `iZM_SDSU.mat` | Final model in MATLAB format for use with the COBRA Toolbox |
 
-The SBML version was checked by re-importing the exported model and confirming that the reaction, metabolite, and gene counts were preserved and that the model retained a feasible optimal FBA solution.
-
-## Citation
-
-If you use the iZM_SDSU model or computational workflows from this repository, please cite the associated master's thesis.
-
-A permanent archived version and citation information will be added with the final repository release.
+The SBML version was checked by re-importing the exported model using COBRApy and confirming that the reaction, metabolite, and gene counts were preserved.
 
 ## Author
 
