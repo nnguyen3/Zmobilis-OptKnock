@@ -1,4 +1,7 @@
 # iZM_SDSU: Genome-Scale Metabolic Modeling of Zymomonas mobilis
+## Citation
+
+Nguyen, N. (2026). *nnguyen3/Zmobilis-OptKnock: iZM_SDSU Thesis Release v1.0.1* (Version v1.0.1) [Computer software]. Zenodo. https://doi.org/10.5281/zenodo.21881065
 
 This repository contains the final **iZM_SDSU genome-scale metabolic model (GEM)** of *Zymomonas mobilis* and computational workflows used to investigate ethanol and isobutanol production.
 
